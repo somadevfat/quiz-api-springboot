@@ -41,3 +41,9 @@ out/
 .cursor
 memory-bank
 todo1.html
+記事用
+
+### Local development ###
+.attach_pid*
+app.log
+*.log
