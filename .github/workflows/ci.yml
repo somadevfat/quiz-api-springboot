@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -51,24 +56,14 @@ jobs:
       - name: Run tests
         run: ./gradlew test
         env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/quizdb
-          SPRING_DATASOURCE_USERNAME: quiz_user
-          SPRING_DATASOURCE_PASSWORD: password
+          SPRING_PROFILES_ACTIVE: test
         
-      - name: Run build
-        run: ./gradlew build
-        env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/quizdb
-          SPRING_DATASOURCE_USERNAME: quiz_user
-          SPRING_DATASOURCE_PASSWORD: password
-        
-      - name: Generate test report
-        uses: dorny/test-reporter@v1
+      - name: Publish test results
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
-          name: Test Results
-          path: 'build/test-results/**/*.xml'
-          reporter: java-junit
+          files: |
+            build/test-results/**/*.xml
           
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
